@@ -1,9 +1,11 @@
 import Image from "next/image";
+import { Header } from "@/components/Header";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-slate-50 font-sans dark:bg-slate-950">
-      <main className="flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 px-8 py-24 text-center sm:items-start sm:text-left">
+    <div className="flex flex-1 flex-col bg-slate-50 font-sans dark:bg-slate-950">
+      <Header />
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col items-center justify-center gap-10 px-8 py-24 text-center sm:items-start sm:text-left">
         <Image
           src="/images/utilix-icon.png"
           alt="Utilix logo"
