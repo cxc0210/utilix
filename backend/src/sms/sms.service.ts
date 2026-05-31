@@ -46,21 +46,8 @@ export class SmsService {
 
     const expiresInSeconds = this.configService.get<number>(
       'sms.verificationCodeExpiresInSeconds',
-      60,
+      300,
     );
-    console.log(
-      `Sending SMS to ${phone} with code ${code} that expires in ${expiresInSeconds} seconds`,
-    );
-    console.log({
-      aliyunConfig: {
-        accessKeyId: this.configService.get<string>('sms.aliyunAccessKeyId'),
-        accessKeySecret: this.configService.get<string>(
-          'sms.aliyunAccessKeySecret',
-        ),
-        signName,
-        templateCode,
-      },
-    });
     const response = await this.getAliyunClient().sendSmsVerifyCode(
       new SendSmsVerifyCodeRequest({
         countryCode: '86',

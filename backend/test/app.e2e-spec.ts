@@ -10,6 +10,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(() => {
+    process.env.REDIS_URL = '';
     process.env.SMS_SEND_ENABLED = 'false';
     process.env.SMS_VERIFICATION_CODE_EXPIRES_IN_SECONDS = '300';
   });

@@ -16,6 +16,7 @@ export class AuthController {
     await this.authService.sendVerificationCode(
       verificationCode.phone,
       verificationCode.code,
+      verificationCode.expiresInSeconds,
     );
   }
 }

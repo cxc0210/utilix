@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomInt } from 'crypto';
+import { RedisService } from '../redis/redis.service';
 import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
     private readonly smsService: SmsService,
   ) {}
 
@@ -35,16 +37,12 @@ export class AuthService {
     };
   }
 
-  async sendVerificationCode(phone: string, code: string) {
+  async sendVerificationCode(
+    phone: string,
+    code: string,
+    expiresInSeconds: number,
+  ) {
+    await this.redisService.setVerificationCode(phone, code, expiresInSeconds);
     await this.smsService.sendVerificationCode(phone, code);
-
-    return {
-      phone,
-      code,
-      expiresInSeconds: this.configService.get<number>(
-        'sms.verificationCodeExpiresInSeconds',
-        60,
-      ),
-    };
   }
 }

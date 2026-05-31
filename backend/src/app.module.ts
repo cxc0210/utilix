@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import redisConfig from './config/redis.config';
 import smsConfig from './config/sms.config';
 
 @Module({
@@ -10,7 +11,7 @@ import smsConfig from './config/sms.config';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
-      load: [smsConfig],
+      load: [smsConfig, redisConfig],
     }),
     AuthModule,
   ],
