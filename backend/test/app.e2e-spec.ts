@@ -46,12 +46,16 @@ describe('AppController (e2e)', () => {
         }: {
           body: {
             code: number;
-            data: Record<string, never>;
+            data: {
+              expiresInSeconds: number;
+              verificationCode: string;
+            };
             message: string;
           };
         }) => {
           expect(body.code).toBe(200);
-          expect(body.data).toEqual({});
+          expect(body.data.expiresInSeconds).toBe(300);
+          expect(body.data.verificationCode).toMatch(/^\d{6}$/);
           expect(body.message).toBe('');
         },
       );

@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import redisConfig from './config/redis.config';
 import smsConfig from './config/sms.config';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import smsConfig from './config/sms.config';
       envFilePath: ['.env.local', '.env'],
       load: [smsConfig, redisConfig],
     }),
+    PrismaModule,
     AuthModule,
   ],
   controllers: [AppController],

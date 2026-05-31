@@ -38,7 +38,10 @@ type PhoneLoginValues = z.infer<typeof phoneLoginSchema>;
 export function PhoneLoginForm() {
   const [countdown, setCountdown] = useState(0);
   const [sendCodeError, setSendCodeError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<PhoneLoginValues>({
     resolver: zodResolver(phoneLoginSchema),
     defaultValues: {
@@ -58,6 +61,47 @@ export function PhoneLoginForm() {
 
     return () => window.clearTimeout(timer);
   }, [countdown]);
+
+  async function handleSubmit(values: PhoneLoginValues) {
+    setIsSubmitting(true);
+    setSubmitError("");
+    setSubmitSuccess("");
+
+    try {
+      const response = await fetch("/api/auth/phone-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone: `+86${values.phone.trim()}`,
+          code: values.code.trim(),
+        }),
+      });
+      const result = (await response.json()) as {
+        code: number;
+        data?: {
+          phone?: string | null;
+        };
+        message?: string;
+      };
+
+      if (!response.ok || result.code < 200 || result.code >= 300) {
+        setSubmitError(result.message || "登录失败，请稍后重试");
+        return;
+      }
+
+      setSubmitSuccess(
+        result.data?.phone
+          ? `登录成功，当前账号：${result.data.phone}`
+          : "登录成功",
+      );
+    } catch {
+      setSubmitError("登录失败，请稍后重试");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   async function handleSendCode() {
     const isPhoneValid = await form.trigger("phone");
@@ -103,7 +147,7 @@ export function PhoneLoginForm() {
   return (
     <form
       className="grid gap-5"
-      onSubmit={form.handleSubmit(() => undefined)}
+      onSubmit={form.handleSubmit(handleSubmit)}
     >
       <FieldGroup>
         <Field>
@@ -152,8 +196,19 @@ export function PhoneLoginForm() {
           {sendCodeError ? <FieldError>{sendCodeError}</FieldError> : null}
         </Field>
       </FieldGroup>
-      <Button type="submit" className="h-11 w-full" size="lg">
-        登录 / 注册
+      {submitError ? <FieldError>{submitError}</FieldError> : null}
+      {submitSuccess ? (
+        <FieldDescription className="text-center text-sm text-emerald-600">
+          {submitSuccess}
+        </FieldDescription>
+      ) : null}
+      <Button
+        type="submit"
+        className="h-11 w-full"
+        size="lg"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "提交中" : "登录 / 注册"}
       </Button>
       <FieldDescription className="text-center text-xs">
         未注册的手机号将自动创建账号

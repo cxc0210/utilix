@@ -33,6 +33,14 @@ export class RedisService implements OnModuleDestroy {
     return this.getClient().get(this.getVerificationCodeKey(phone));
   }
 
+  async deleteVerificationCode(phone: string) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    await this.getClient().del(this.getVerificationCodeKey(phone));
+  }
+
   async onModuleDestroy() {
     if (!this.client) {
       return;
